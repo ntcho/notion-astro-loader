@@ -66,6 +66,8 @@
     "crossrm": "^1.0.0",
     "fs-extra": "^11.3.0",
     "prettier": "^3.5.3",
+    "prettier-plugin-astro": "0.14.1",
+    "prettier-plugin-tailwindcss": "0.6.11",
     "typescript": "^5.8.2",
     "vfile": "^6.0.3",
     "vitest": "^2.0.5"

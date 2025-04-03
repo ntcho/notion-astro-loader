@@ -156,9 +156,8 @@ export class NotionPageRenderer {
     logger: AstroIntegrationLogger
   ) {
     // Create a sub-logger labeled with the page name
-    const pageTitle = transformedPropertySchema.title.safeParse(
-      Object.entries(page.properties).find(([_, property]) => property.type === "title")
-    );
+    const titleProp = Object.entries(page.properties).find(([_, property]) => property.type === 'title');
+    const pageTitle = transformedPropertySchema.title.safeParse(titleProp ? titleProp[1] : {});
     this.#logger = logger.fork(`page ${page.id} (Title ${pageTitle.success ? pageTitle.data : 'unknown'})`);
     if (!pageTitle.success) {
       this.#logger.warn(`Failed to parse title property from page: ${pageTitle.error.toString()}`);
