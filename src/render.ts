@@ -5,9 +5,9 @@ import type { AstroIntegrationLogger, MarkdownHeading } from 'astro';
 import type { ParseDataOptions } from 'astro/loaders';
 
 import type { FileObject, NotionPageData, PageObjectResponse } from './types.js';
-import * as transformedPropertySchema from './schemas/transformed-properties.js';
 import { fileToUrl } from './format.js';
 import { type VFile } from 'vfile';
+import { dim } from 'kleur/colors';
 
 // #region Processor
 import notionRehype from 'notion-rehype-k';
@@ -155,13 +155,7 @@ export class NotionPageRenderer {
     public readonly imageSavePath: string,
     logger: AstroIntegrationLogger
   ) {
-    // Create a sub-logger labeled with the page name
-    const titleProp = Object.entries(page.properties).find(([_, property]) => property.type === 'title');
-    const pageTitle = transformedPropertySchema.title.safeParse(titleProp ? titleProp[1] : {});
-    this.#logger = logger.fork(`page ${page.id} (Title ${pageTitle.success ? pageTitle.data : 'unknown'})`);
-    if (!pageTitle.success) {
-      this.#logger.warn(`Failed to parse title property from page: ${pageTitle.error.toString()}`);
-    }
+    this.#logger = logger.fork(`${logger.label}/render`);
   }
 
   /**
@@ -169,6 +163,7 @@ export class NotionPageRenderer {
    */
   async getPageData(transformCoverImage = false, rootAlias = 'src'): Promise<ParseDataOptions<NotionPageData>> {
     const { page } = this;
+
     let cover = page.cover;
     // transform cover image file
     if (cover && transformCoverImage && cover.type === 'file') {
@@ -181,6 +176,7 @@ export class NotionPageRenderer {
         },
       };
     }
+
     return {
       id: page.id,
       data: {
@@ -201,23 +197,24 @@ export class NotionPageRenderer {
    * This is created once for all pages then shared.
    */
   async render(process: ReturnType<typeof buildProcessor>): Promise<RenderedNotionEntry | undefined> {
-    this.#logger.debug('Rendering');
+    this.#logger.debug('Rendering page');
+
     try {
       const blocks = await awaitAll(listBlocks(this.client, this.page.id, this.#fetchImage));
 
       if (this.#imageAnalytics.download > 0 || this.#imageAnalytics.cached > 0) {
         this.#logger.info(
           [
-            `Astro Notion Loader found `,
-            ` ${this.#imageAnalytics.download} images need to download `,
-            this.#imageAnalytics.cached > 0 ? `and ${this.#imageAnalytics.cached} images need to use cached ` : ``,
+            `Found ${this.#imageAnalytics.download} images to download`,
+            this.#imageAnalytics.cached > 0 && dim(`${this.#imageAnalytics.cached} already cached`),
           ].join(' ')
         );
       }
 
       const { vFile, headings } = await process(blocks, this.#imagePaths);
 
-      this.#logger.debug('Rendered');
+      this.#logger.debug('Rendered page');
+
       return {
         html: vFile.toString(),
         metadata: {

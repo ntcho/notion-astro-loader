@@ -1,3 +1,4 @@
+import { dim } from 'kleur/colors';
 import fse from 'fs-extra';
 import path from 'node:path';
 export interface SaveOptions {
@@ -64,10 +65,11 @@ export async function saveImageFromAWS(url: string, dir: string, options: SaveOp
     const response = await fetch(url);
     const buffer = await response.arrayBuffer();
     fse.writeFile(filePath, new Uint8Array(buffer));
-    log?.(`Saved image ${fileName} to ${filePath}`);
+
+    log?.(`Saved image \`${fileName}\` ${dim(`created \`${filePath}\``)}`);
     tag?.('download');
   } else {
-    log?.(`Skip saving image ${fileName}, since it is cached.`);
+    log?.(`Skipped caching image \`${fileName}\` ${dim(`cached at \`${filePath}\``)}`);
     tag?.('cached');
   }
 
