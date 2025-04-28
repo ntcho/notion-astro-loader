@@ -165,29 +165,69 @@ export class NotionPageRenderer {
   async getPageData(transformCoverImage = false, rootAlias = 'src'): Promise<ParseDataOptions<NotionPageData>> {
     const { page } = this;
 
-    let cover = page.cover;
+    const getTransformedUrl = async (file: FileObject) => {
+      return `${rootAlias}/${transformImagePathForCover(await this.#fetchImage(file))}`;
+    };
+
     // transform cover image file
-    if (cover && transformCoverImage && cover.type === 'file') {
-      const transformedUrl = `${rootAlias}/${transformImagePathForCover(await this.#fetchImage(cover))}`;
+    let cover = page.cover;
+    if (cover && cover.type === 'file') {
       cover = {
         ...cover,
         file: {
           ...cover.file,
-          url: transformedUrl,
+          url: await getTransformedUrl(cover),
         },
       };
+    }
+
+    // transform icon image file
+    let icon = page.icon;
+    if (icon && icon.type === 'file') {
+      icon = {
+        ...icon,
+        file: {
+          ...icon.file,
+          url: await getTransformedUrl(icon),
+        },
+      };
+    }
+
+    // transform properties
+    let properties = page.properties;
+    for (const [_, prop] of Object.entries(properties)) {
+      // transform file properties
+      if (prop.type === 'files') {
+        prop.files = await Promise.all(
+          prop.files.map(async (f) => {
+            // only transform Notion-hosted files
+            if (f.type === 'file') {
+              return {
+                ...f,
+                file: {
+                  ...f.file,
+                  // @ts-ignore `f.type` is const string 'file'
+                  url: await getTransformedUrl(f),
+                },
+              };
+            } else {
+              return f;
+            }
+          })
+        );
+      }
     }
 
     return {
       id: page.id,
       data: {
-        icon: page.icon,
+        icon,
         cover,
+        properties,
         archived: page.archived,
         in_trash: page.in_trash,
         url: page.url,
         public_url: page.public_url,
-        properties: page.properties,
       },
     };
   }
@@ -207,7 +247,7 @@ export class NotionPageRenderer {
         this.#logger.info(
           [
             `Found ${this.#imageAnalytics.download} images to download`,
-            this.#imageAnalytics.cached > 0 && dim(`${this.#imageAnalytics.cached} already cached`),
+            this.#imageAnalytics.cached > 0 ? dim(`${this.#imageAnalytics.cached} already cached`) : '',
           ].join(' ')
         );
       }
