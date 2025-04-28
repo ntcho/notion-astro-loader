@@ -1,23 +1,24 @@
-import type { HtmlElementNode, ListNode, TextNode } from '@jsdevtools/rehype-toc';
-import { toc as rehypeToc } from '@jsdevtools/rehype-toc';
-import { type Client, iteratePaginatedAPI, isFullBlock } from '@notionhq/client';
 import type { AstroIntegrationLogger, MarkdownHeading } from 'astro';
 import type { ParseDataOptions } from 'astro/loaders';
 
-import type { FileObject, NotionPageData, PageObjectResponse } from './types.js';
-import { fileToUrl } from './format.js';
-import { type VFile } from 'vfile';
-import { dim } from 'kleur/colors';
-
 // #region Processor
+import * as fse from 'fs-extra';
 import notionRehype from 'notion-rehype-k';
 import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 import { unified, type Plugin } from 'unified';
+import { type VFile } from 'vfile';
+
+import type { HtmlElementNode, ListNode, TextNode } from '@jsdevtools/rehype-toc';
+import { toc as rehypeToc } from '@jsdevtools/rehype-toc';
+import { isFullBlock, iteratePaginatedAPI, type Client } from '@notionhq/client';
+import { dim } from 'kleur/colors';
+
+import { fileToUrl } from './format.js';
 import { saveImageFromAWS, transformImagePathForCover } from './image.js';
-import * as fse from 'fs-extra';
 import { rehypeImages } from './rehype/rehype-images.js';
+import type { FileObject, NotionPageData, PageObjectResponse } from './types.js';
 
 const baseProcessor = unified()
   .use(notionRehype, {}) // Parse Notion blocks to rehype AST

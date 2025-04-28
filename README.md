@@ -27,6 +27,10 @@ bun add @chlorinec-pkgs/notion-astro-loader -D
 
 ## Usage
 
+If you want to see a real world blog example, you can check out [KiritoKing/notion-astro-rev](https://github.com/KiritoKing/notion-astro-rev).
+
+If you are also using this loader to create wonderful blogs, please consider to [contact me](mailto:kiritoclzh@gmail.com) or make a PR to this repo to make showcases of your blogs.
+
 ### Step.1 Astro Config
 
 For legacy users who use v4, you need to enable experimental support in your `astro.config.js`, while for new users, you don't need to do this.

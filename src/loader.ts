@@ -1,14 +1,16 @@
-import { Client, isFullPage, iteratePaginatedAPI } from '@notionhq/client';
 import type { RehypePlugins } from 'astro';
 import type { Loader } from 'astro/loaders';
+
+import { Client, isFullPage, iteratePaginatedAPI } from '@notionhq/client';
+import { dim } from 'kleur/colors';
+import * as path from 'node:path';
+
 import { propertiesSchemaForDatabase } from './database-properties.js';
+import { VIRTUAL_CONTENT_ROOT } from './image.js';
 import { buildProcessor, NotionPageRenderer, type RehypePlugin } from './render.js';
 import { notionPageSchema } from './schemas/page.js';
-import type { ClientOptions, QueryDatabaseParameters } from './types.js';
-import * as path from 'node:path';
-import { VIRTUAL_CONTENT_ROOT } from './image.js';
-import { dim } from 'kleur/colors';
 import * as transformedPropertySchema from './schemas/transformed-properties.js';
+import type { ClientOptions, QueryDatabaseParameters } from './types.js';
 
 export interface NotionLoaderOptions
   extends Pick<ClientOptions, 'auth' | 'timeoutMs' | 'baseUrl' | 'notionVersion' | 'fetch' | 'agent'>,
