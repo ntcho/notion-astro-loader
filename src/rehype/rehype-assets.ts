@@ -15,41 +15,38 @@ function isAstroImageFormat(src: string): boolean {
 export function rehypeAssets() {
   return ({ imagePaths }: Config) =>
     function (tree: any, file: VFile) {
-      const imageOccurrenceMap = new Map();
+      const assetOccurrenceMap = new Map();
 
       visit(tree, (node) => {
         if (node.type !== 'element') return;
 
         if (node.properties?.src) {
-          node.properties.src = decodeURI(node.properties.src);
-          if (file.data.astro) {
-            file.data.astro.imagePaths = imagePaths;
-          }
+          const src = decodeURI(node.properties.src);
+          node.properties.src = src;
+
+          // Add Astro metadata
+          if (file.data.astro) file.data.astro.imagePaths = imagePaths;
 
           // Handle Astro image optimization
-          if (
-            node.tagName === 'img' &&
-            imagePaths?.includes(node.properties.src) &&
-            isAstroImageFormat(node.properties.src)
-          ) {
+          if (node.tagName === 'img' && imagePaths?.includes(src) && isAstroImageFormat(src)) {
             const { ...props } = node.properties;
 
             // Initialize or increment occurrence count for this image
-            const index = imageOccurrenceMap.get(node.properties.src) || 0;
-            imageOccurrenceMap.set(node.properties.src, index + 1);
+            const index = assetOccurrenceMap.get(src) || 0;
+            assetOccurrenceMap.set(src, index + 1);
 
+            // Add Astro-specific metadata for image processing
             node.properties['__ASTRO_IMAGE_'] = JSON.stringify({ ...props, index });
 
-            Object.keys(props).forEach((prop) => {
-              delete node.properties[prop];
-            });
+            // Remove original properties to prevent conflicts
+            Object.keys(props).forEach((prop) => delete node.properties[prop]);
 
             return; // Skip further processing for Astro images
           }
 
           // Convert relative paths (assets in /src) to absolute paths (served from /public)
-          if (node.properties.src.startsWith('../')) node.properties.src = node.properties.src.replace(/^(..\/)+/, '/');
-          if (node.properties.src.startsWith('src/')) node.properties.src = node.properties.src.replace(/^src\//, '/');
+          if (src.startsWith('../')) node.properties.src = src.replace(/^(..\/)+/, '/');
+          if (src.startsWith('src/')) node.properties.src = src.replace(/^src\//, '/');
         }
 
         // Handle href attributes similarly to src
