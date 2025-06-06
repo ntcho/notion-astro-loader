@@ -1,4 +1,4 @@
-# @chlorinec-pkgs/notion-astro-loader
+# @ntcho/notion-astro-loader
 
 > **Notice**
 >
@@ -16,13 +16,13 @@ If you want to know more about new content layer API, you can read [Astro's blog
 
 ```sh
 # npm
-npm install @chlorinec-pkgs/notion-astro-loader --save-dev
+npm install @ntcho/notion-astro-loader --save-dev
 # pnpm
-pnpm add @chlorinec-pkgs/notion-astro-loader -D
+pnpm add @ntcho/notion-astro-loader -D
 # yarn
-yarn add @chlorinec-pkgs/notion-astro-loader -D
+yarn add @ntcho/notion-astro-loader -D
 # bun
-bun add @chlorinec-pkgs/notion-astro-loader -D
+bun add @ntcho/notion-astro-loader -D
 ```
 
 ## Usage
@@ -79,7 +79,7 @@ Then, you can use the loader loader in your content collection configuration:
 
 ```ts
 import { defineCollection } from 'astro:content';
-import { notionLoader } from '@chlorinec-pkgs/notion-astro-loader';
+import { notionLoader } from '@ntcho/notion-astro-loader';
 
 const database = defineCollection({
   loader: notionLoader({
