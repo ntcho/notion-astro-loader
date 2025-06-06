@@ -1,6 +1,6 @@
 {
   "name": "@ntcho/notion-astro-loader",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Notion loader for the Astro Content Layer API. Load database properties and pages from Notion API into Astro Collection.",
   "keywords": [
     "astro-loader",
