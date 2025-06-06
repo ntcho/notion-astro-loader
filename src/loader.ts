@@ -1,4 +1,4 @@
-import type { RehypePlugins } from 'astro';
+import type { AstroIntegrationLogger, RehypePlugins } from 'astro';
 import type { Loader } from 'astro/loaders';
 
 import { Client, isFullPage, iteratePaginatedAPI } from '@notionhq/client';
@@ -121,7 +121,7 @@ export function notionLoader({
         pageCount++;
 
         // Fork logger with a unique label for each page
-        const log_pg = log_db.fork(`${log_db.label}/${page.id.slice(0, 3)}..${page.id.slice(-3)}`);
+        const log_pg = getPageLogger(log_db, page.id);
 
         const cachedPage = store.get(page.id);
         const isCached = cachedPageIds.delete(page.id); // used to check which pages were deleted
@@ -157,7 +157,7 @@ export function notionLoader({
 
       // Remove any pages that were not found in the API
       for (const deletedPageId of cachedPageIds) {
-        const log_pg = log_db.fork(`${log_db.label}/${deletedPageId.slice(0, 6)}`);
+        const log_pg = getPageLogger(log_db, deletedPageId);
 
         store.delete(deletedPageId);
         log_pg.info(`Deleted page`);
@@ -186,4 +186,11 @@ function getPageMetadata(page: Page): string {
     `${pageTitle.success ? '"' + pageTitle.data + '"' : 'Untitled'}`,
     `(last edited ${page.last_edited_time.slice(0, 10)})`,
   ].join(' ');
+}
+
+/**
+ * Get a logger for a specific page, with a unique label based on the page ID.
+ */
+function getPageLogger(log_db: AstroIntegrationLogger, pageId: string) {
+  return log_db.fork(`${log_db.label}/${pageId.slice(0, 3)}..${pageId.slice(-3)}`);
 }
