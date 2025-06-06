@@ -2,7 +2,7 @@ import { visit } from 'unist-util-visit';
 import type { VFile } from 'vfile';
 
 interface Config {
-  imagePaths?: string[];
+  assetPaths?: string[];
 }
 
 const ASTRO_IMAGE_FORMATS = ['avif', 'webp', 'png', 'jpg', 'jpeg', 'gif'];
@@ -13,7 +13,7 @@ function isAstroImageFormat(src: string): boolean {
 }
 
 export function rehypeAssets() {
-  return ({ imagePaths }: Config) =>
+  return ({ assetPaths }: Config) =>
     function (tree: any, file: VFile) {
       const assetOccurrenceMap = new Map();
 
@@ -25,10 +25,10 @@ export function rehypeAssets() {
           node.properties.src = src;
 
           // Add Astro metadata
-          if (file.data.astro) file.data.astro.imagePaths = imagePaths;
+          if (file.data.astro) file.data.astro.imagePaths = assetPaths;
 
           // Handle Astro image optimization
-          if (node.tagName === 'img' && imagePaths?.includes(src) && isAstroImageFormat(src)) {
+          if (node.tagName === 'img' && assetPaths?.includes(src) && isAstroImageFormat(src)) {
             const { ...props } = node.properties;
 
             // Initialize or increment occurrence count for this image

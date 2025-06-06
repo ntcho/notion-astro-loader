@@ -47,8 +47,8 @@ export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [Re
     return processor;
   });
 
-  return async function process(blocks: unknown[], imagePaths: string[]) {
-    const processor = await processorPromise.then((p) => p().use(rehypeAssets(), { imagePaths }));
+  return async function process(blocks: unknown[], assetPaths: string[]) {
+    const processor = await processorPromise.then((p) => p().use(rehypeAssets(), { assetPaths }));
     const vFile = (await processor.process({ data: blocks } as Record<string, unknown>)) as VFile;
     return { vFile, headings };
   };
@@ -88,10 +88,17 @@ function extractTocHeadings(toc: HtmlElementNode): MarkdownHeading[] {
  * Extends `RenderedContent` object: https://docs.astro.build/en/reference/content-loader-reference/#rendered
  */
 export interface RenderedNotionPage {
+  /** Rendered HTML string. If present then `render(entry)` will return a component that renders this HTML. */
   html: string;
   metadata: {
+    /**
+     * Any images that are present in this entry. Relative to the DataEntry filePath.
+     * NOTE: chanigng this to `assetPaths` will break the Astro Content Loader API
+     */
     imagePaths: string[];
+    /** Any headings that are present in this file. Returned as `headings` from `render()` */
     headings: MarkdownHeading[];
+    /** List of Notion blocks that were rendered in the HTML. */
     blocks: any[];
   };
 }
