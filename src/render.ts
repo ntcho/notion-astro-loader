@@ -20,7 +20,7 @@ import rehypeStringify from 'rehype-stringify';
 import type { HtmlElementNode, ListNode, TextNode } from '@jsdevtools/rehype-toc';
 import { toc as rehypeToc } from '@jsdevtools/rehype-toc';
 
-import { rehypeImages } from './rehype/rehype-images.js';
+import { rehypeAssets } from './rehype/rehype-assets.js';
 
 const baseProcessor = unified()
   // @ts-ignore
@@ -48,7 +48,7 @@ export function buildProcessor(rehypePlugins: Promise<ReadonlyArray<readonly [Re
   });
 
   return async function process(blocks: unknown[], imagePaths: string[]) {
-    const processor = await processorPromise.then((p) => p().use(rehypeImages(), { imagePaths }));
+    const processor = await processorPromise.then((p) => p().use(rehypeAssets(), { imagePaths }));
     const vFile = (await processor.process({ data: blocks } as Record<string, unknown>)) as VFile;
     return { vFile, headings };
   };

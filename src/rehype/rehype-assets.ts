@@ -12,7 +12,7 @@ function isAstroImageFormat(src: string): boolean {
   return ext ? ASTRO_IMAGE_FORMATS.includes(ext.toLowerCase()) : false;
 }
 
-export function rehypeImages() {
+export function rehypeAssets() {
   return ({ imagePaths }: Config) =>
     function (tree: any, file: VFile) {
       const imageOccurrenceMap = new Map();
