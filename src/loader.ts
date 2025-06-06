@@ -6,8 +6,8 @@ import { dim } from 'kleur/colors';
 import * as path from 'node:path';
 
 import { propertiesSchemaForDatabase } from './database-properties.js';
-import { VIRTUAL_CONTENT_ROOT } from './image.js';
-import { buildProcessor, NotionPageRenderer, type RehypePlugin } from './render.js';
+import { VIRTUAL_CONTENT_ROOT } from './asset.js';
+import { buildProcessor, NotionPageRenderer } from './render.js';
 import { notionPageSchema } from './schemas/page.js';
 import * as transformedPropertySchema from './schemas/transformed-properties.js';
 import type { ClientOptions, QueryDatabaseParameters } from './types.js';
