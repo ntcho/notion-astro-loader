@@ -26,9 +26,11 @@ export function rehypeAssets() {
 
           // Add Astro metadata
           if (file.data.astro) {
+            // compact for newer version of Astro, check this url for more https://github.com/withastro/astro/blob/7d72793b/packages/markdown/remark/src/remark-collect-images.ts
+            // @ts-ignore
             file.data.astro.imagePaths = assetPaths;
             // @ts-ignore
-            file.data.astro.localImagePaths = assetPaths; // compact for newer version of Astro, check this url for more https://github.com/withastro/astro/blob/7d72793b/packages/markdown/remark/src/remark-collect-images.ts
+            file.data.astro.localImagePaths = assetPaths;
           }
 
           // Handle Astro image optimization
