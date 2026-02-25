@@ -25,7 +25,11 @@ export function rehypeAssets() {
           node.properties.src = src;
 
           // Add Astro metadata
-          if (file.data.astro) file.data.astro.imagePaths = assetPaths;
+          if (file.data.astro) {
+            file.data.astro.imagePaths = assetPaths;
+            // @ts-ignore
+            file.data.astro.localImagePaths = assetPaths; // compact for newer version of Astro, check this url for more https://github.com/withastro/astro/blob/7d72793b/packages/markdown/remark/src/remark-collect-images.ts
+          }
 
           // Handle Astro image optimization
           if (node.tagName === 'img' && assetPaths?.includes(src) && isAstroImageFormat(src)) {
